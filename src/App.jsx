@@ -32,4 +32,116 @@ function App() {
   )
 }
 
-export default App
+export default App;
+const stories = [
+  {
+    objectID: "1",
+    title: "Understanding React",
+    url: "https://react.dev",
+    author: "Dan Abramov",
+    points: 150,
+    num_comments: 45,
+  },
+  {
+    objectID: "2",
+    title: "Modern JavaScript",
+    url: "https://developer.mozilla.org",
+    author: "MDN",
+    points: 98,
+    num_comments: 21,
+  },
+];
+function App() {
+  return (
+    <div>
+      <h1>Hacker News</h1>
+
+      {stories.map((story) => (
+        <div key={story.objectID}>
+          <h3>
+            <a href={story.url} target="_blank" rel="noreferrer">
+              {story.title}
+            </a>
+          </h3>
+
+          <p>
+            By {story.author} | {story.points} points |{" "}
+            {story.num_comments} comments
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function App() {
+  console.log(stories[0]); // Debug: inspect one story object
+
+  return (
+    <div>
+      <h1>Hacker News</h1>
+
+      {stories.map((story) => (
+        <div key={story.objectID}>
+          <h3>{story.title}</h3>
+        </div>
+      ))}
+    </div>
+  );
+}
+function App() {
+  return (
+    <div>
+      <h1>Hacker News</h1>
+
+      {stories.map((story) => (
+        <div key={story.objectID}>
+          <h3>
+            <a
+              href={story.url ? story.url : "#"} // fallback if url is missing
+              target="_blank"                    // open in new tab
+              rel="noreferrer"
+            >
+              {story.title}
+            </a>
+          </h3>
+
+          <p>
+            <span>By {story.author}</span> |{" "}
+            <span>{story.points} points</span> |{" "}
+            <span>{story.num_comments} comments</span>
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+function App() {
+  return (
+    <div>
+      <h1>Hacker News</h1>
+
+      {stories.map((story) => (
+        <div key={story.objectID}>
+          <h3>
+            <a
+              href={story.url ? story.url : "#"}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {story.title}
+            </a>
+          </h3>
+
+          <p>
+            <span>By {story.author}</span> |{" "}
+            <span>{story.points} points</span> |{" "}
+            <span>{story.num_comments} comments</span>
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
