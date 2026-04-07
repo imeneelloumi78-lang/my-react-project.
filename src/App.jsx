@@ -2,11 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-
 import { useState } from "react";
 import "./App.css";
 
-
+/* ---------------- GLOBAL DATA ---------------- */
 const stories = [
   {
     objectID: "1",
@@ -26,46 +25,45 @@ const stories = [
   },
 ];
 
+const Header = () => <h1>Hacker News</h1>;
 
-function Header() {
-  return <h1>Hacker News</h1>;
-}
+const Search = () => {
+  const handleChange = (event) => {
+    console.log(event.target.value);
+    console.log("User is typing...");
+  };
 
-
-function Search() {
   return (
     <div>
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" />
+      <input id="search" type="text" onChange={handleChange} />
     </div>
   );
-}
+};
 
 
-function List() {
-  return (
-    <div>
-      {stories.map((story) => (
-        <div key={story.objectID}>
-          <h3>
-            <a href={story.url || "#"} target="_blank" rel="noreferrer">
-              {story.title}
-            </a>
-          </h3>
+const List = () => (
+  <div>
+    {stories.map((story) => (
+      <div key={story.objectID}>
+        <h3>
+          <a href={story.url || "#"} target="_blank" rel="noreferrer">
+            {story.title}
+          </a>
+        </h3>
 
-          <p>
-            <span>By {story.author}</span> |{" "}
-            <span>{story.points} points</span> |{" "}
-            <span>{story.num_comments} comments</span>
-          </p>
-        </div>
-      ))}
-    </div>
-  );
-}
+        <p>
+          <span>By {story.author}</span> |{" "}
+          <span>{story.points} points</span> |{" "}
+          <span>{story.num_comments} comments</span>
+        </p>
+      </div>
+    ))}
+  </div>
+);
 
-/* ---------------- APP COMPONENT ---------------- */
-function App() {
+
+const App = () => {
   const [count, setCount] = useState(0);
 
   return (
@@ -80,6 +78,7 @@ function App() {
       <List />
     </div>
   );
-}
+};
 
 export default App;
+
