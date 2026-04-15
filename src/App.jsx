@@ -1,5 +1,13 @@
 
+
 import React, { useState, useEffect } from "react";
+
+
+const initialStories = [
+  { title: "React", url: "https://reactjs.org", id: 1 },
+  { title: "JavaScript", url: "https://developer.mozilla.org", id: 2 },
+  { title: "Node", url: "https://nodejs.org", id: 3 },
+];
 
 const App = () => {
   
@@ -7,23 +15,24 @@ const App = () => {
     return localStorage.getItem("search") || "";
   });
 
-  const stories = [
-    { title: "React", url: "https://reactjs.org" },
-    { title: "JavaScript", url: "https://developer.mozilla.org" },
-    { title: "Node", url: "https://nodejs.org" },
-  ];
+  
+  const [stories, setStories] = useState(initialStories);
 
- 
+  
   useEffect(() => {
     localStorage.setItem("search", searchTerm);
-  }, [searchTerm]); 
+  }, [searchTerm]);
 
   const handleSearch = (event) => {
-    const value = event.target.value;
-    setSearchTerm(value);
+    setSearchTerm(event.target.value);
+  };
 
-    
-    localStorage.setItem("search", value);
+  
+  const handleRemoveStory = (item) => {
+    const newStories = stories.filter(
+      (story) => story.id !== item.id
+    );
+    setStories(newStories);
   };
 
   const filteredStories = stories.filter((story) =>
@@ -35,31 +44,57 @@ const App = () => {
       <h1>My App</h1>
 
      
-      <Search searchTerm={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        type="text"
+        value={searchTerm}
+        onInputChange={handleSearch}
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
 
-      <List stories={filteredStories} />
+      <List stories={filteredStories} onRemoveItem={handleRemoveStory} />
     </div>
   );
 };
 
 
-const Search = ({ searchTerm, onSearch }) => (
-  <div>
-    <input type="text" value={searchTerm} onChange={onSearch} />
-  </div>
+const InputWithLabel = ({
+  id,
+  type = "text",
+  value,
+  onInputChange,
+  children,
+}) => (
+  <>
+    <label htmlFor={id}>{children}</label>
+    <input
+      id={id}
+      type={type}
+      value={value}
+      onChange={onInputChange}
+    />
+  </>
 );
 
-const List = ({ stories }) => (
+
+const List = ({ stories, onRemoveItem }) => (
   <ul>
-    {stories.map((story, index) => (
-      <Item key={index} story={story} />
+    {stories.map((story) => (
+      <Item
+        key={story.id}
+        story={story}
+        onRemoveItem={onRemoveItem}
+      />
     ))}
   </ul>
 );
 
-const Item = ({ story }) => (
+
+const Item = ({ story, onRemoveItem }) => (
   <li>
     <a href={story.url}>{story.title}</a>
+    <button onClick={() => onRemoveItem(story)}>Delete</button>
   </li>
 );
 
