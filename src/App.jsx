@@ -1,109 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { useState } from "react";
-import "./App.css";
 
-import { useState } from "react";
-import "./App.css";
-
-const Header = () => <h1>Hacker News</h1>;
-
-
-const Item = ({ story }) => (
-  <div>
-    <h3>
-      <a href={story.url || "#"} target="_blank" rel="noreferrer">
-        {story.title}
-      </a>
-    </h3>
-
-    <p>
-      <span>By {story.author}</span> |{" "}
-      <span>{story.points} points</span> |{" "}
-      <span>{story.num_comments} comments</span>
-    </p>
-  </div>
-);
-
-
-const List = ({ stories }) => {
-  console.log("List re-render");
-
-  return (
-    <div>
-      {stories.map((story) => (
-        <Item key={story.objectID} story={story} />
-      ))}
-    </div>
-  );
-};
-
-
-const Search = ({ onSearch }) => {
-  console.log("Search re-render");
-
-  const handleChange = (event) => {
-    onSearch(event.target.value);
-  };
-
-  return (
-    <div>
-      <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} />
-    </div>
-  );
-};
-
+import React, { useState, useEffect } from "react";
 
 const App = () => {
-  console.log("App re-render");
-
   
+  const [searchTerm, setSearchTerm] = useState(() => {
+    return localStorage.getItem("search") || "";
+  });
+
   const stories = [
-    {
-      objectID: "1",
-      title: "Understanding React",
-      url: "https://react.dev",
-      author: "Dan Abramov",
-      points: 150,
-      num_comments: 45,
-    },
-    {
-      objectID: "2",
-      title: "Modern JavaScript",
-      url: "https://developer.mozilla.org",
-      author: "MDN",
-      points: 98,
-      num_comments: 21,
-    },
+    { title: "React", url: "https://reactjs.org" },
+    { title: "JavaScript", url: "https://developer.mozilla.org" },
+    { title: "Node", url: "https://nodejs.org" },
   ];
 
-  
-  const [searchTerm, setSearchTerm] = useState("");
+ 
+  useEffect(() => {
+    localStorage.setItem("search", searchTerm);
+  }, [searchTerm]); 
 
-  
-  const handleSearch = (term) => {
-    setSearchTerm(term);
+  const handleSearch = (event) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+
+    
+    localStorage.setItem("search", value);
   };
 
-  
   const filteredStories = stories.filter((story) =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div>
-      <Header />
+      <h1>My App</h1>
 
-      <Search onSearch={handleSearch} />
+     
+      <Search searchTerm={searchTerm} onSearch={handleSearch} />
 
-      
       <List stories={filteredStories} />
     </div>
   );
 };
+
+
+const Search = ({ searchTerm, onSearch }) => (
+  <div>
+    <input type="text" value={searchTerm} onChange={onSearch} />
+  </div>
+);
+
+const List = ({ stories }) => (
+  <ul>
+    {stories.map((story, index) => (
+      <Item key={index} story={story} />
+    ))}
+  </ul>
+);
+
+const Item = ({ story }) => (
+  <li>
+    <a href={story.url}>{story.title}</a>
+  </li>
+);
 
 export default App;
 
