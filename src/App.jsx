@@ -1,103 +1,99 @@
-
-
 import React, { useState, useEffect } from "react";
 
 
-const initialStories = [
-  { title: "React", url: "https://reactjs.org", id: 1 },
-  { title: "JavaScript", url: "https://developer.mozilla.org", id: 2 },
-  { title: "Node", url: "https://nodejs.org", id: 3 },
-];
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
 
-const App = () => {
+function App() {
   
-  const [searchTerm, setSearchTerm] = useState(() => {
-    return localStorage.getItem("search") || "";
-  });
+  const [searchTerm, setSearchTerm] = useState("react");
+
+ 
+  const [url, setUrl] = useState(`${API_ENDPOINT}react`);
 
   
-  const [stories, setStories] = useState(initialStories);
+  const [stories, setStories] = useState([]);
+
+ 
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Error state
+  const [isError, setIsError] = useState(false);
 
   
   useEffect(() => {
-    localStorage.setItem("search", searchTerm);
-  }, [searchTerm]);
+    
+    if (!url) return;
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+    const fetchData = async () => {
+      setIsLoading(true);
+      setIsError(false);
+
+      try {
+        const response = await fetch(url);
+        const result = await response.json();
+
+       
+        setStories(result.hits);
+      } catch (error) {
+        setIsError(true);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [url]);
+
+ 
+  const handleSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
-
-  
-  const handleRemoveStory = (item) => {
-    const newStories = stories.filter(
-      (story) => story.id !== item.id
-    );
-    setStories(newStories);
-  };
-
-  const filteredStories = stories.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
-    <div>
-      <h1>My App</h1>
+    <div style={{ padding: "20px" }}>
+      <h1>Hacker News Search</h1>
 
-     
-      <InputWithLabel
-        id="search"
+      <input
         type="text"
         value={searchTerm}
-        onInputChange={handleSearch}
-      >
-        <strong>Search:</strong>
-      </InputWithLabel>
+        onChange={(event) => setSearchTerm(event.target.value)}
+        placeholder="Search stories..."
+      />
 
-      <List stories={filteredStories} onRemoveItem={handleRemoveStory} />
+      <button
+        onClick={handleSubmit}
+        disabled={!searchTerm}
+        style={{ marginLeft: "10px" }}
+      >
+        Submit
+      </button>
+
+     
+      {isError && <p>Something went wrong...</p>}
+
+   
+      {isLoading ? (
+        <p>Loading ...</p>
+      ) : (
+        <ul>
+          {stories.map((story) => (
+            <li key={story.objectID}>
+              <a href={story.url} target="_blank" rel="noreferrer">
+                {story.title}
+              </a>
+              <p>Author: {story.author}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
-};
-
-
-const InputWithLabel = ({
-  id,
-  type = "text",
-  value,
-  onInputChange,
-  children,
-}) => (
-  <>
-    <label htmlFor={id}>{children}</label>
-    <input
-      id={id}
-      type={type}
-      value={value}
-      onChange={onInputChange}
-    />
-  </>
-);
-
-
-const List = ({ stories, onRemoveItem }) => (
-  <ul>
-    {stories.map((story) => (
-      <Item
-        key={story.id}
-        story={story}
-        onRemoveItem={onRemoveItem}
-      />
-    ))}
-  </ul>
-);
-
-
-const Item = ({ story, onRemoveItem }) => (
-  <li>
-    <a href={story.url}>{story.title}</a>
-    <button onClick={() => onRemoveItem(story)}>Delete</button>
-  </li>
-);
+}
 
 export default App;
+
+
+
+
 
 
